@@ -15,7 +15,7 @@ public class MidiTest {
 		try {
 			Receiver receiver = MidiSystem.getReceiver();
 			MidiEvent me = new MidiEvent(65, 90, 0.2);
-			Runnable runnable = me.getRunnable(receiver);
+			Runnable runnable = me.getRunnable(receiver, null);
 			new Thread(runnable).start();
 			Thread.sleep(80);
 			new Thread(runnable).start();

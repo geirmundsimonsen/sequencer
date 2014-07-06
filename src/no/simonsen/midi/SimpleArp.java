@@ -50,7 +50,7 @@ class ArpHandler implements EventHandler<ActionEvent> {
 			System.out.println("on");
 			stpe = new ScheduledThreadPoolExecutor(10);
 			MidiEvent me = new MidiEvent((int) note.getValue(), 80, 0.3);
-			Runnable runnable = me.getRunnable(MidiApp.receiver);
+			Runnable runnable = me.getRunnable(MidiApp.receiver, null);
 			stpe.scheduleAtFixedRate(runnable, 0, 1000, TimeUnit.MILLISECONDS);
 		} else {
 			stpe.shutdown();

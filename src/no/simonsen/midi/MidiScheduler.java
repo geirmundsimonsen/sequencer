@@ -1,6 +1,7 @@
 package no.simonsen.midi;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -28,15 +29,35 @@ class MidiScheduler {
 		unixTimeAtStart = System.currentTimeMillis();
 	}
 	
+	/*
+	 * If the first midi event in each batch gets a lock - that is unlocked when that
+	 * event ends..?
+	 * 
+	 * This would work assuming that midi events are fired in chronological order.
+	 * Then we'll have a buffer as big as events.size().
+	 */
 	public void scheduleAndBlock(ArrayList<MidiEvent> events) {
-		for (MidiEvent event : events) {
-			Runnable runnable = event.getRunnable(receiver);
-			executor.schedule(runnable, (long) (event.time * 1000) - (System.currentTimeMillis() - unixTimeAtStart), TimeUnit.MILLISECONDS);
+		CountDownLatch cdl = new CountDownLatch(1);
+		
+		Runnable runnable = events.get(0).getRunnable(receiver, cdl);
+		executor.schedule(runnable, (long) (events.get(0).time * 1000) - (System.currentTimeMillis() - unixTimeAtStart), TimeUnit.MILLISECONDS);
+		
+		for (int i = 1; i < events.size(); i++) {
+			runnable = events.get(i).getRunnable(receiver, null);
+			executor.schedule(runnable, (long) (events.get(i).time * 1000) - (System.currentTimeMillis() - unixTimeAtStart), TimeUnit.MILLISECONDS);
 		}
+		
+		try {
+			cdl.await();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		/*
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 }

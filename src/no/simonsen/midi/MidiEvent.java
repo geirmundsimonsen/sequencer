@@ -1,5 +1,7 @@
 package no.simonsen.midi;
 
+import java.util.concurrent.CountDownLatch;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
@@ -22,7 +24,7 @@ public class MidiEvent {
 		this.time = time;
 	}
 	
-	public Runnable getRunnable(Receiver midiIn) {
+	public Runnable getRunnable(Receiver midiIn, CountDownLatch cdl) {
 		Runnable runnable = () -> {
 			try {
 				ShortMessage sm = new ShortMessage(ShortMessage.NOTE_ON, pitch, velocity);
@@ -30,6 +32,12 @@ public class MidiEvent {
 				Thread.sleep((long) (length * 1000));
 				sm = new ShortMessage(ShortMessage.NOTE_OFF, pitch, velocity);
 				midiIn.send(sm, -1);
+				
+				if (cdl != null) {
+					cdl.countDown();
+					System.out.println("Opening latch");
+				}
+				
 			} catch (InvalidMidiDataException e) {
 				System.out.println("Failed sending midi data.");
 			} catch (InterruptedException e) {
