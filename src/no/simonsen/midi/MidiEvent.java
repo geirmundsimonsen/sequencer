@@ -35,7 +35,6 @@ public class MidiEvent {
 				
 				if (cdl != null) {
 					cdl.countDown();
-					System.out.println("Opening latch");
 				}
 				
 			} catch (InvalidMidiDataException e) {
