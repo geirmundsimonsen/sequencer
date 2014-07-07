@@ -14,7 +14,7 @@ import javax.sound.midi.Receiver;
  * It also buffers the messages, since patterns are potentially infinite.
  * The buffering system isn't coded yet, therefore the dumb Thread.sleep() limiting function.
  */
-class MidiScheduler {
+public class MidiScheduler {
 	Receiver receiver = null;
 	ScheduledThreadPoolExecutor executor;
 	long unixTimeAtStart;

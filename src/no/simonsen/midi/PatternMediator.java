@@ -7,7 +7,7 @@ import java.util.Random;
  * in response to getValue(). Right now it is particularly tied to list patterns, it makes
  * no sense to have this class be responsible for the output of generator patterns.
  */
-class PatternMediator implements ValueSupplier {
+public class PatternMediator implements ValueSupplier {
 	private ListPattern pattern;
 	private boolean normal = true;
 	private boolean reversed = false;

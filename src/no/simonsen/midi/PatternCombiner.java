@@ -9,7 +9,7 @@ import java.util.Map;
  * This responsibility might change, and PatternCombiner would simply be a container for 
  * patterns.
  */
-class PatternCombiner {
+public class PatternCombiner {
 	private Map<String, ValueSupplier> valueSuppliers = new HashMap<String, ValueSupplier>();
 
 	public void addValueSupplier(ValueSupplier valueSupplier, String id) {

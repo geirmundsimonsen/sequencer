@@ -4,7 +4,7 @@ package no.simonsen.midi;
  * EventBuffer should ideally buffer events from a PatternCombiner.
  * However, this responsibility is moved (for now) to MidiScheduler.
  */
-class EventBuffer extends Thread {
+public class EventBuffer extends Thread {
 	MidiScheduler midiScheduler = new MidiScheduler();
 	PatternCombiner patternCombiner;
 	

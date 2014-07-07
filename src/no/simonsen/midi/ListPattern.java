@@ -9,10 +9,22 @@ import java.util.ArrayList;
  * pattern to be re-used elsewhere. PatternMediator typically cycles through the values in
  * the ListPattern, with options to output its values in reverse or output them randomly.
  */
-class ListPattern {
+public class ListPattern {
 	public ArrayList<Double> values = new ArrayList<>();
 	
 	public void addValue(double value) {
 		values.add(value);
+	}
+	
+	public void addValue(int index, double value) {
+		values.add(index, value);
+	}
+	
+	public void setValue(int index, double value) {
+		values.set(index, value);
+	}
+	
+	public Double removeValue(int index) {
+		return values.remove(index);
 	}
 }
