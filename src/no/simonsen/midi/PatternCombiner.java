@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * PatternCombiner is responsible for generating MIDI events based on the patterns it hold.
  * This responsibility might change, and PatternCombiner would simply be a container for 
@@ -11,9 +14,19 @@ import java.util.Map;
  */
 public class PatternCombiner {
 	private Map<String, ValueSupplier> valueSuppliers = new HashMap<String, ValueSupplier>();
-
+	private Logger logger;
+	
+	public PatternCombiner() {
+		logger = LoggerFactory.getLogger("no.simonsen.midi.PatternCombiner");
+	}
+	
 	public void addValueSupplier(ValueSupplier valueSupplier, String id) {
 		valueSuppliers.put(id, valueSupplier);
+		logger.info("{} {}", valueSupplier, id);
+	}
+	
+	public ValueSupplier getValueSupplier(String id) {
+		return valueSuppliers.get(id);
 	}
 	
 	public MidiEvent getNext() {

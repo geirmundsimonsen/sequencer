@@ -13,4 +13,14 @@ public class ConstantPattern implements ValueSupplier {
 	public double nextValue() {
 		return value;
 	}
+	
+	public boolean hasNext() {
+		return false;
+	}
+	
+	public void reset() { }
+	
+	public String toString() {
+		return "" + value;
+	}
 }

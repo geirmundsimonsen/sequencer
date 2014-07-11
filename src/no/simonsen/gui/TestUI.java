@@ -7,18 +7,23 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TestUI extends Application {
+	public static Stage stage;
+	
 	public static void main(String[] args) {
-		System.out.println("Testing ListPatternUI.");
 		launch(args);
 	}
 	
 	public void start(Stage primaryStage) {
-		Group root = new Group();
-		root.getChildren().add(new ListPatternUI());
+		stage = primaryStage;
 		
+		
+		Group root = new Group();
+		PatternCombinerUI pcUI = new PatternCombinerUI();
+		root.getChildren().add(pcUI);
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add("css/test.css");
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
 	}
 }

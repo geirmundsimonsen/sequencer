@@ -46,4 +46,8 @@ public class MidiEvent {
 		
 		return runnable;
 	}
+	
+	public String toString() {
+		return String.format("MidiEvent - time: %f, length: %f, pitch: %d, velocity: %d.", time, length, pitch, velocity);
+	}
 }

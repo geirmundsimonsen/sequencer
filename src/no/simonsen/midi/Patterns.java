@@ -32,7 +32,7 @@ public class Patterns {
 		velocityPattern.addValue(40);
 		velocityPattern.addValue(30);
 
-		RandomPattern pitchPattern = new RandomPattern(60, 72);
+		RandomPattern pitchPattern = new RandomPattern(60, 72, 1);
 		
 		PatternCombiner patternCombiner = new PatternCombiner();
 		

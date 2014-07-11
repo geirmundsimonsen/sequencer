@@ -41,6 +41,9 @@ public class PatternMediator implements ValueSupplier {
 		return value;
 	}
 	
+	public boolean hasNext() { return true; }
+	public void reset() {}
+	
 	public void setNormal() { normal = true; reversed = false; random = false; timeSensitive = false; }
 	public void setReversed() { normal = false; reversed = true; random = false; timeSensitive = false; }
 	public void setRandom() { normal = false; reversed = false; random = true; timeSensitive = false; randomGen = new Random(); }
