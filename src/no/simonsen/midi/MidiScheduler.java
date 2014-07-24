@@ -41,7 +41,6 @@ public class MidiScheduler {
 		
 		Runnable runnable = events.get(0).getRunnable(receiver, cdl);
 		executor.schedule(runnable, (long) (events.get(0).time * 1000) - (System.currentTimeMillis() - unixTimeAtStart), TimeUnit.MILLISECONDS);
-		
 		for (int i = 1; i < events.size(); i++) {
 			runnable = events.get(i).getRunnable(receiver, null);
 			executor.schedule(runnable, (long) (events.get(i).time * 1000) - (System.currentTimeMillis() - unixTimeAtStart), TimeUnit.MILLISECONDS);

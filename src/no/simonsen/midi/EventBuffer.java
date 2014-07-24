@@ -7,14 +7,19 @@ package no.simonsen.midi;
 public class EventBuffer extends Thread {
 	MidiScheduler midiScheduler = new MidiScheduler();
 	PatternCombiner patternCombiner;
+	boolean running = true;
 	
 	public EventBuffer(PatternCombiner patternCombiner) { 
 		this.patternCombiner = patternCombiner;
 	}
 	
 	public void run() {
-		while (true) {
-			midiScheduler.scheduleAndBlock(patternCombiner.getNextN(10));
+		while (running) {
+			midiScheduler.scheduleAndBlock(patternCombiner.getNextN(1));
 		}
+	}
+	
+	public void halt() {
+		running = false;
 	}
 }

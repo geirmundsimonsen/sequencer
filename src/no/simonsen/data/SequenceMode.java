@@ -2,7 +2,8 @@ package no.simonsen.data;
 
 public enum SequenceMode {
 	MANUAL, // lazy, immediate, immediate and reset
-	NORMAL, 
+	NORMAL,
+	TIME_SENSITIVE,
 	REVERSE,
 	BACK_AND_FORTH, // opt.: counting edges
 	JUMP, // jump over 1..N, consider reverse

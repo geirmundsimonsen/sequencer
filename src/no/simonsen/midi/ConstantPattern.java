@@ -5,9 +5,15 @@ package no.simonsen.midi;
  */
 public class ConstantPattern implements ValueSupplier {
 	double value;
+	String id;
 	
-	public ConstantPattern(double value) {
+	public ConstantPattern(double value, String id) {
 		this.value = value;
+		this.id = id;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public double nextValue() {

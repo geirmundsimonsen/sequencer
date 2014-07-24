@@ -25,6 +25,7 @@ public class MidiEvent {
 	}
 	
 	public Runnable getRunnable(Receiver midiIn, CountDownLatch cdl) {
+		
 		Runnable runnable = () -> {
 			try {
 				ShortMessage sm = new ShortMessage(ShortMessage.NOTE_ON, pitch, velocity);
@@ -43,7 +44,11 @@ public class MidiEvent {
 				System.out.println("Sleep interrupted, why?");
 			}
 		};
-		
+		/*
+		Runnable runnable = () -> {
+			System.out.println("time: " + time + ", length: " + length + ", pitch: " + pitch + ", velocity: " + velocity);
+		};
+		*/
 		return runnable;
 	}
 	

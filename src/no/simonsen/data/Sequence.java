@@ -6,31 +6,37 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
+import no.simonsen.gui.ValueSupplierHost;
 import no.simonsen.midi.ConstantPattern;
 import no.simonsen.midi.ValueSupplier;
 
-public class Sequence implements ValueSupplier {
+public class Sequence implements ValueSupplier, ValueSupplierHost {
 	private List<ValueSupplier> sequence;
-	private ValueSupplier valueSupplier;
+	private ValueSupplier valueSupplier; // temporary valuesupplier
+	private String id;
 	private int counter;
 	private int length;
 	private int startOffset;
 	private int endOffset;
 	private int localOffset;
+	private double patternDuration;
 	private SequenceMode sequenceMode;
 	private Random random;
 	private Queue<Integer> noRepeatQueue;
 	private int noRepeatMemory;
 	private int randomWalkMemory;
 	
-	public Sequence() {
+	public Sequence(String id) {
+		this.id = id;
+		
 		sequence = new ArrayList<>();
-		sequence.add(new ConstantPattern(0));
+		sequence.add(new ConstantPattern(0, String.valueOf(0)));
 		
 		setLength(Integer.MAX_VALUE);
 		setStartOffset(0);
 		setEndOffset(0);
 		setLocalOffset(0);
+		setPatternDuration(1);
 		setSequenceMode(SequenceMode.NORMAL);
 		
 		random = new Random();
@@ -80,6 +86,14 @@ public class Sequence implements ValueSupplier {
 		localOffset = value;
 	}
 	
+	public double getPatternDuration() { return patternDuration; }
+	
+	public void setPatternDuration(double value) {
+		if (value < 0)
+			value = 0;
+		patternDuration = value;
+	}
+	
 	public SequenceMode getSequenceMode() { return sequenceMode; }
 
 	public void setSequenceMode(SequenceMode mode) {
@@ -88,6 +102,8 @@ public class Sequence implements ValueSupplier {
 		
 		if (mode == SequenceMode.NORMAL) {
 			counter = localOffset;
+		} else if (mode == SequenceMode.TIME_SENSITIVE) {
+			counter = 0;
 		} else if (mode == SequenceMode.REVERSE) {
 			counter = localOffset;
 		} else if (mode == SequenceMode.RANDOM) {
@@ -122,6 +138,10 @@ public class Sequence implements ValueSupplier {
 		return size;
 	}
 	
+	public String getId() {
+		return id;
+	}
+	
 	public double nextValue() {
 		double value = -1;
 		
@@ -139,6 +159,13 @@ public class Sequence implements ValueSupplier {
 			if (!valueSupplier.hasNext()) {
 				valueSupplier.reset();
 				counter++;			
+			}
+		} else if (sequenceMode == SequenceMode.TIME_SENSITIVE) {
+			valueSupplier = sequence.get((counter % listSize) + startOffset);
+			value = valueSupplier.nextValue() + counter / listSize * patternDuration;
+			if (!valueSupplier.hasNext()) {
+				valueSupplier.reset();
+				counter++;
 			}
 		} else if (sequenceMode == SequenceMode.REVERSE) {
 			valueSupplier = sequence.get((listSize - 1 - counter % listSize) + startOffset);
@@ -229,7 +256,8 @@ public class Sequence implements ValueSupplier {
 		counter = 0;
 	}
 	
-	public void add(ValueSupplier valueSupplier) {
+	@Override
+	public void addValueSupplier(ValueSupplier valueSupplier) {
 		sequence.add(valueSupplier);
 	}
 	
@@ -237,7 +265,13 @@ public class Sequence implements ValueSupplier {
 		sequence.add(index, valueSupplier);
 	}
 	
-	public ValueSupplier remove(int index) {
+	@Override
+	public void replaceValueSupplier(ValueSupplier oldSupplier, ValueSupplier newSupplier) {
+		sequence.set(sequence.indexOf(oldSupplier), newSupplier);
+	}
+	
+	@Override
+	public ValueSupplier removeValueSupplier(int index) {
 		if (sequence.size() <= 1) {
 			throw new RuntimeException("A sequence has to have at least one element.");
 		}
@@ -248,11 +282,11 @@ public class Sequence implements ValueSupplier {
 		return sequence.size();
 	}
 	
-	public String getValueSupplierId(int index) {
-		return sequence.get(index).toString();
+	public ValueSupplier getValueSupplier(int index) {
+		return sequence.get(index);
 	}
 	
-	public void set(int index, ValueSupplier valueSupplier) {
-		sequence.set(index, valueSupplier);
+	public String getValueSupplierInfo(int index) {
+		return sequence.get(index).toString();
 	}
 }

@@ -5,6 +5,7 @@ package no.simonsen.midi;
  * like PatternCombiner.
  */
 public interface ValueSupplier {
+	public String getId();
 	public double nextValue();
 	public boolean hasNext();
 	public void reset();

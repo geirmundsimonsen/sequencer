@@ -21,6 +21,10 @@ public class PatternMediator implements ValueSupplier {
 		this.pattern = pattern;
 	}
 	
+	public String getId() {
+		return "unused class";
+	}
+	
 	public double nextValue() {
 		double value = 0;
 		

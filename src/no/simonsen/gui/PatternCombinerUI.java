@@ -3,30 +3,26 @@ package no.simonsen.gui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import no.simonsen.data.Sequence;
+import no.simonsen.midi.ConstantPattern;
+import no.simonsen.midi.EventBuffer;
 import no.simonsen.midi.ValueSupplier;
 import no.simonsen.midi.PatternCombiner;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class PatternCombinerUI extends Group {
 	private PatternCombiner patternCombiner;
-	private Font labelFont;
+	private EventBuffer eventBuffer;
 	private Group patternCellsUIGroup; 
 	private Logger logger;
 	
@@ -39,8 +35,7 @@ public class PatternCombinerUI extends Group {
 			}
 		});
 		
-		labelFont = Font.loadFont(getClass().getResourceAsStream("/fonts/TypewriterScribbled.ttf"), 10);
-		logger = LoggerFactory.getLogger("no.simonsen.gui.PatternCombiner");
+		logger = LoggerFactory.getLogger("no.simonsen.gui.PatternCombinerUI");
 		
 		Rectangle background = new Rectangle(500, 210);
 		background.setFill(Color.SNOW);
@@ -53,7 +48,7 @@ public class PatternCombinerUI extends Group {
 		Button addPatternCell = new Button("add pattern cell");
 		addPatternCell.setLayoutX(10);
 		addPatternCell.setLayoutY(10);
-		addPatternCell.setFont(labelFont);
+		addPatternCell.setFont(TestUI.labelFont);
 		addPatternCell.setOnAction((e) -> {
 			PatternCell patternCell = new PatternCell();
 			patternCellsUIGroup.getChildren().add(patternCell);
@@ -66,7 +61,7 @@ public class PatternCombinerUI extends Group {
 		CheckBox sendMidiMessages = new CheckBox("Send MIDI messages");
 		sendMidiMessages.setLayoutX(10);
 		sendMidiMessages.setLayoutY(150);
-		sendMidiMessages.setFont(labelFont);
+		sendMidiMessages.setFont(TestUI.labelFont);
 		sendMidiMessages.setOnAction((e) -> {
 			if (sendMidiMessages.isSelected()) {
 				if (canSendMidiMessages()) {
@@ -83,20 +78,25 @@ public class PatternCombinerUI extends Group {
 		});
 		sendMidiMessages.fire();
 		
-		Button play = new Button("Play");
+		ToggleButton play = new ToggleButton("Play");
 		play.setLayoutX(10);
 		play.setLayoutY(180);
-		play.setFont(labelFont);
+		play.setFont(TestUI.labelFont);
 		play.setTooltip(new Tooltip("Press 'space' to play"));
 		play.setOnAction((e) -> {
-			// play patterncombiner
+			if (play.isSelected()) {
+				eventBuffer = new EventBuffer(patternCombiner);
+				eventBuffer.start();
+			} else {
+				eventBuffer.halt();
+				patternCombiner.resetValueSuppliers();
+			}
 		});
 		
 		getChildren().add(addPatternCell);
 		getChildren().add(patternCellsUIGroup);
 		getChildren().add(sendMidiMessages);
 		getChildren().add(play);
-		
 	}
 	
 	private boolean canSendMidiMessages() {
@@ -134,10 +134,8 @@ public class PatternCombinerUI extends Group {
 	}
 	
 	class PatternCell extends Group {
-		private ValueSupplier valueSupplier;
 		private Label patternLabel;
-		private TextField patternField;
-		private PopupMenuUI patternPopup;
+		private ValueSupplierField valueSupplierField;
 		private Label patternIdLabel;
 		private TextField patternIdField;
 		private Rectangle patternIdLockIndicator;
@@ -153,70 +151,14 @@ public class PatternCombinerUI extends Group {
 			patternLabel = new Label("pattern");
 			patternLabel.setPrefSize(80, 20);
 			patternLabel.setAlignment(Pos.CENTER);
-			patternLabel.setFont(labelFont);
+			patternLabel.setFont(TestUI.labelFont);
 			patternLabel.setLayoutX(calculatedLayoutX);
 			patternLabel.setLayoutY(0);
-			
-			patternField = new TextField();
-			patternField.getStyleClass().add("textField");
-			patternField.setPrefSize(80, 20);
-			patternField.setLayoutX(calculatedLayoutX);
-			patternField.setLayoutY(20);
-			
-			patternPopup = new PopupMenuUI(12);
-			patternPopup.setLayoutX(calculatedLayoutX + patternField.getPrefWidth());
-			patternPopup.setLayoutY(30);
-			patternPopup.addMenuItem("add sequence", (e) -> {
-				ListPatternUI listPatternUI = new ListPatternUI();
-				listPatternUI.setSequence(new Sequence());
-				patternCombiner.addValueSupplier(listPatternUI.getSequence(),
-						getPatternId());
-				
-				Stage editWindow = new Stage();
-				editWindow.initModality(Modality.WINDOW_MODAL);
-				editWindow.initOwner(TestUI.stage);
-				editWindow.initStyle(StageStyle.UTILITY);
-				editWindow.setScene(new Scene(listPatternUI));
-				editWindow.setX(TestUI.stage.getX() + patternPopup.getLayoutX() + 20);
-				editWindow.setY(TestUI.stage.getY() + patternPopup.getLayoutY() - 20);
-				
-				// Don't know why we must do this.
-				// But not doing it causes the primary stage to retain focus
-				// 50% of the times.
-				Platform.runLater(() -> {
-					editWindow.show();
-				});
-			});
-			
-			patternPopup.addMenuItem("edit...", (e) -> {
-				ValueSupplier valueSupplier = patternCombiner.getValueSupplier(getPatternId());
-				if (valueSupplier instanceof Sequence) {
-					Sequence sequence = (Sequence) valueSupplier;
-					ListPatternUI listPatternUI = new ListPatternUI();
-					listPatternUI.setSequence(sequence);
-					
-					Stage editWindow = new Stage();
-					editWindow.initModality(Modality.WINDOW_MODAL);
-					editWindow.initOwner(TestUI.stage);
-					editWindow.initStyle(StageStyle.UTILITY);
-					editWindow.setScene(new Scene(listPatternUI));
-					editWindow.setX(TestUI.stage.getX() + patternPopup.getLayoutX() + 20);
-					editWindow.setY(TestUI.stage.getY() + patternPopup.getLayoutY() - 20);
-					
-					// Don't know why we must do this.
-					// But not doing it causes the primary stage to retain focus
-					// 50% of the times.
-					Platform.runLater(() -> {
-						editWindow.show();
-					});
-				}
-			});
-			
 			
 			patternIdLabel = new Label("id");
 			patternIdLabel.setPrefSize(80, 20);
 			patternIdLabel.setAlignment(Pos.CENTER);
-			patternIdLabel.setFont(labelFont);
+			patternIdLabel.setFont(TestUI.labelFont);
 			patternIdLabel.setLayoutX(calculatedLayoutX);
 			patternIdLabel.setLayoutY(40);
 			
@@ -236,9 +178,17 @@ public class PatternCombinerUI extends Group {
 			patternIdLockIndicator.setMouseTransparent(true);
 			patternIdLockIndicator.setVisible(false);
 			
+			valueSupplierField = new ValueSupplierField();
+			valueSupplierField.setValueSupplierHost(patternCombiner);
+			valueSupplierField.setLayoutY(20);
+			valueSupplierField.setLayoutX(calculatedLayoutX);
+			
+			ValueSupplier valueSupplier = new ConstantPattern(0, getPatternId());
+			patternCombiner.addValueSupplier(valueSupplier);
+			valueSupplierField.setValueSupplier(valueSupplier);
+			
 			getChildren().add(patternLabel);
-			getChildren().add(patternField);
-			getChildren().add(patternPopup);
+			getChildren().add(valueSupplierField);
 			getChildren().add(patternIdLabel);
 			getChildren().add(patternIdField);
 			getChildren().add(patternIdLockIndicator);
