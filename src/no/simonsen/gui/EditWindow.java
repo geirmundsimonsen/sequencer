@@ -6,15 +6,16 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 
 public class EditWindow extends Stage {
-	public EditWindow(Parent root, double x, double y) {
+	public EditWindow(Parent root, double x, double y, Window parentWindow) {
 		initModality(Modality.WINDOW_MODAL);
-		initOwner(TestUI.stage);
+		initOwner(parentWindow);
 		initStyle(StageStyle.UTILITY);
 		setScene(new Scene(root));
-		setX(TestUI.stage.getX() + x);
-		setY(TestUI.stage.getY() + y);
+		setX(parentWindow.getX() + x);
+		setY(parentWindow.getY() + y);
 		
 		Platform.runLater(() -> {
 			show();

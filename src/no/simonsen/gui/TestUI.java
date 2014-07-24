@@ -8,7 +8,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class TestUI extends Application {
-	public static Stage stage;
 	public static Font labelFont;
 	
 	public static void main(String[] args) {
@@ -21,9 +20,7 @@ public class TestUI extends Application {
 			System.out.println("Couldn't load font.");
 			System.exit(1);
 		}
-		
-		stage = primaryStage;
-		
+				
 		Group root = new Group();
 		PatternCombinerUI pcUI = new PatternCombinerUI();
 		root.getChildren().add(pcUI);

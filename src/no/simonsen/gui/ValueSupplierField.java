@@ -66,7 +66,11 @@ public class ValueSupplierField extends Group {
 			ValueSupplier newSupplier = sequenceUI.getSequence();
 			valueSupplierHost.replaceValueSupplier(valueSupplier, newSupplier);
 			valueSupplier = newSupplier;
-			new EditWindow(sequenceUI, popupMenu.getLayoutX() + 20, popupMenu.getLayoutY() - 20);			
+			System.out.println(popupMenu.getLayoutX());
+			new EditWindow(sequenceUI, 
+					getLayoutX() + popupMenu.getLayoutX() + 20, 
+					getLayoutY() + popupMenu.getLayoutY() - 20, 
+					popupMenu.getScene().getWindow());		
 		});
 		
 		popupMenu.addMenuItem("edit...", (e) -> {
@@ -74,7 +78,10 @@ public class ValueSupplierField extends Group {
 				Sequence sequence = (Sequence) valueSupplier;
 				SequenceUI listPatternUI = new SequenceUI();
 				listPatternUI.setSequence(sequence);
-				new EditWindow(listPatternUI, popupMenu.getLayoutX() + 20, popupMenu.getLayoutY() - 20);
+				new EditWindow(listPatternUI, 
+						getLayoutX() + popupMenu.getLayoutX() + 20, 
+						getLayoutY() + popupMenu.getLayoutY() - 20, 
+						popupMenu.getScene().getWindow());
 			}
 		});
 		

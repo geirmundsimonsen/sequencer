@@ -2,9 +2,16 @@ package no.simonsen.gui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Popup;
@@ -36,7 +43,7 @@ public class PopupMenuUI extends Group {
 		this.setOnMouseClicked((e) -> {
 			double popupXPos = e.getScreenX() - e.getX() - size * 0.5;
 			double popupYPos = e.getScreenY() - e.getY() + size * 0.5;
-			popupWindow.show(TestUI.stage, popupXPos, popupYPos);
+			popupWindow.show(this, popupXPos, popupYPos);
 		});
 	}
 	
@@ -44,11 +51,20 @@ public class PopupMenuUI extends Group {
 		Button button = new Button(command);
 		button.setPrefSize(130, 20);
 		button.setLayoutY(popupWindow.getContent().size() * 20);
-		button.getStyleClass().add("buttonFauxMenuItem");
+		button.setFont(TestUI.labelFont);
+		
+		// consider storing this rather than create it each time.
+		Stop[] stops = { new Stop(0, Color.ALICEBLUE), new Stop(0.05, Color.LIGHTBLUE), new Stop(0.95, Color.LIGHTBLUE), new Stop(1, Color.ALICEBLUE) };
+		LinearGradient lg = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+		BackgroundFill bgFill = new BackgroundFill(lg, CornerRadii.EMPTY, Insets.EMPTY);
+		Background bg = new Background(bgFill);
+		
+		button.setBackground(bg);
 		button.setOnAction((e) -> {
 			popupWindow.hide();
 		});
-		button.addEventHandler(ActionEvent.ACTION, handler);
+		
+		button.addEventHandler(ActionEvent.ACTION, handler); // custom behavior
 		
 		popupWindow.getContent().add(button);
 	}
