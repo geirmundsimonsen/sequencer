@@ -2,7 +2,7 @@ package no.simonsen.midi;
 
 import java.util.Random;
 
-/*
+/**
  * RandomPattern outputs a random value between min and max.
  */
 public class RandomPattern implements ValueSupplier {

@@ -25,7 +25,6 @@ public class MidiEvent {
 	}
 	
 	public Runnable getRunnable(Receiver midiIn, CountDownLatch cdl) {
-		
 		Runnable runnable = () -> { 
 			try {
 				ShortMessage sm = new ShortMessage(ShortMessage.NOTE_ON, pitch, velocity);

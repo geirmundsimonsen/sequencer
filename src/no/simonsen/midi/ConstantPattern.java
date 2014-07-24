@@ -1,6 +1,6 @@
 package no.simonsen.midi;
 
-/*
+/**
  * A pattern that outputs a single value.
  */
 public class ConstantPattern implements ValueSupplier {
@@ -12,18 +12,22 @@ public class ConstantPattern implements ValueSupplier {
 		this.id = id;
 	}
 	
+	@Override
 	public String getId() {
 		return id;
 	}
 	
+	@Override
 	public double nextValue() {
 		return value;
 	}
 	
+	@Override
 	public boolean hasNext() {
 		return false;
 	}
 	
+	@Override
 	public void reset() { }
 	
 	public String toString() {

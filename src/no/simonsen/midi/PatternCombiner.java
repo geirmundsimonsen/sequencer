@@ -1,9 +1,7 @@
 package no.simonsen.midi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import no.simonsen.gui.ValueSupplierHost;
 

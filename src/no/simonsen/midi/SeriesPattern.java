@@ -1,5 +1,8 @@
 package no.simonsen.midi;
 
+/**
+ * SeriesPattern outputs a value in a constant or exponential series.
+ */
 public class SeriesPattern implements ValueSupplier {
 	private String id;
 	private int counter;

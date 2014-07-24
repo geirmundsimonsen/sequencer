@@ -1,20 +1,13 @@
 package no.simonsen.gui;
 
-import java.util.ArrayList;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Popup;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PopupMenuUI extends Group {
 	private Circle circle;
