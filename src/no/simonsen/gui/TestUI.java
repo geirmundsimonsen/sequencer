@@ -1,5 +1,6 @@
 package no.simonsen.gui;
 
+import no.simonsen.gui.style.BackgroundPool;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ public class TestUI extends Application {
 	public static Font labelFont;
 	
 	public static void main(String[] args) {
+		BackgroundPool.init();
 		launch(args);
 	}
 	

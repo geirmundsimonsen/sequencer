@@ -5,18 +5,19 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class ErrorPopup {
 	Group popup;
-	Group parent;
+	Pane parent;
 	double x;
 	double y;
 	String message;
 	
-	public ErrorPopup(Group parent, double x, double y, String message) {
+	public ErrorPopup(Pane parent, double x, double y, String message) {
 		this.parent = parent;
 		this.x = x;
 		this.y = y;

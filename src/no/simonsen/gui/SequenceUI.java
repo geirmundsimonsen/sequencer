@@ -1,11 +1,12 @@
 package no.simonsen.gui;
 
 import java.util.ArrayList;
-import java.util.function.DoubleConsumer;
-import java.util.function.IntConsumer;
 
 import no.simonsen.data.Sequence;
 import no.simonsen.data.SequenceMode;
+import no.simonsen.gui.elements.ModeElement;
+import no.simonsen.gui.elements.ParameterElement;
+import no.simonsen.gui.style.Styler;
 import no.simonsen.midi.ConstantPattern;
 import no.simonsen.midi.ValueSupplier;
 import javafx.event.EventHandler;
@@ -14,16 +15,19 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
-public class SequenceUI extends Group {
+public class SequenceUI extends Pane {
+	private Group masterGroup;
+	private double offset = 10;
 	private Sequence sequence;
 	private ArrayList<NumberField> numberFields = new ArrayList<>();
 	private Group numberFieldsUIGroup;
@@ -37,13 +41,16 @@ public class SequenceUI extends Group {
 	private ToggleGroup sequenceModeGroup;
 	
 	public SequenceUI() {				
-		Rectangle rectangle = new Rectangle(290, 400);
-		rectangle.setFill(Color.BLACK);
-		getChildren().add(rectangle);
+		Styler.style(this, Styler.Mode.DEFAULT);
+		
+		masterGroup = new Group();
+		masterGroup.setLayoutX(offset);
+		masterGroup.setLayoutY(offset);
+		masterGroup.setBlendMode(BlendMode.MULTIPLY);
 		
 		numberFieldsUIGroup = new Group();
-		numberFieldsUIGroup.setTranslateX(10);
-		numberFieldsUIGroup.setTranslateY(40);
+		numberFieldsUIGroup.setLayoutX(0);
+		numberFieldsUIGroup.setLayoutY(30);
 		
 		sequenceModeGroup = new ToggleGroup();
 		
@@ -55,26 +62,32 @@ public class SequenceUI extends Group {
 		localOffsetElement.setLayoutY(50);
 		lengthElement = new ParameterElement("length", (value) -> { sequence.setLength(value); }, null);
 		lengthElement.setLayoutY(75);
-		ModeElement normalModeElement = new ModeElement("NORMAL", sequenceModeGroup, SequenceMode.NORMAL);
+		ModeElement normalModeElement = new ModeElement("NORMAL", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.NORMAL);
 		normalModeElement.setLayoutY(100);
-		ModeElement timeSensitiveModeElement = new ModeElement("TIME SENSITIVE", sequenceModeGroup, SequenceMode.TIME_SENSITIVE);
+		ModeElement timeSensitiveModeElement = new ModeElement("TIME SENSITIVE", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.TIME_SENSITIVE);
 		timeSensitiveModeElement.setLayoutY(125);
 		patternDurationElement = new ParameterElement("duration", null, (value) -> { sequence.setPatternDuration(value); });
 		patternDurationElement.setLayoutY(150);
-		ModeElement reverseModeElement = new ModeElement("REVERSE", sequenceModeGroup, SequenceMode.REVERSE);
+		ModeElement reverseModeElement = new ModeElement("REVERSE", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.REVERSE);
 		reverseModeElement.setLayoutY(175);
-		ModeElement randomModeElement = new ModeElement("RANDOM", sequenceModeGroup, SequenceMode.RANDOM);
-		randomModeElement.setLayoutY(200);	
-		ModeElement randomNoRepeatModeElement = new ModeElement("RANDOM NO REPEAT", sequenceModeGroup, SequenceMode.RANDOM_NO_REPEAT);
+		ModeElement randomModeElement = new ModeElement("RANDOM", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.RANDOM);
+		randomModeElement.setLayoutY(200);
+		ModeElement randomNoRepeatModeElement = new ModeElement("RANDOM NO REPEAT", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.RANDOM_NO_REPEAT);
 		randomNoRepeatModeElement.setLayoutY(225);
 		noRepeatMemoryElement = new ParameterElement("no mem rep", (value) -> { sequence.setNoRepeatMemory(value); }, null);
 		noRepeatMemoryElement.setLayoutY(250);
-		ModeElement randomWalkModeElement = new ModeElement("RANDOM WALK", sequenceModeGroup, SequenceMode.RANDOM_WALK);
+		ModeElement randomWalkModeElement = new ModeElement("RANDOM WALK", sequenceModeGroup, 
+				(mode) -> { sequence.setSequenceMode(mode); }, SequenceMode.RANDOM_WALK);
 		randomWalkModeElement.setLayoutY(275);
 		
 		Group sequenceControlsUIGroup = new Group();
-		sequenceControlsUIGroup.setLayoutX(120);
-		sequenceControlsUIGroup.setLayoutY(10);
+		sequenceControlsUIGroup.setLayoutX(110);
+		sequenceControlsUIGroup.setLayoutY(0);
 		sequenceControlsUIGroup.getChildren().add(startOffsetElement);
 		sequenceControlsUIGroup.getChildren().add(endOffsetElement);
 		sequenceControlsUIGroup.getChildren().add(localOffsetElement);
@@ -91,23 +104,26 @@ public class SequenceUI extends Group {
 		Button addNumberField = new Button("+");
 		addNumberField.setMinSize(20, 20); addNumberField.setMaxSize(20, 20); addNumberField.setPrefSize(20, 20);
 		addNumberField.setFont(TestUI.labelFont);
-		addNumberField.setTranslateX(90);
-		addNumberField.setTranslateY(20);
+		addNumberField.setLayoutX(80);
+		addNumberField.setLayoutY(10);
 		addNumberField.setFocusTraversable(false);
 		addNumberField.setOnAction((e) -> { addNumberField(true); });
 		
 		Button removeNumberField = new Button("-");
 		removeNumberField.setMinSize(20, 20); removeNumberField.setMaxSize(20, 20); removeNumberField.setPrefSize(20, 20);
 		removeNumberField.setFont(TestUI.labelFont);
-		removeNumberField.setTranslateX(70);
-		removeNumberField.setTranslateY(20);
+		removeNumberField.setLayoutX(60);
+		removeNumberField.setLayoutY(10);
 		removeNumberField.setFocusTraversable(false);
 		removeNumberField.setOnAction((e) -> { if (numberFieldCount > 1) removeNumberField(); });
 		
-		getChildren().add(addNumberField);
-		getChildren().add(removeNumberField);
-		getChildren().add(numberFieldsUIGroup);
-		getChildren().add(sequenceControlsUIGroup);
+		masterGroup.getChildren().add(addNumberField);
+		masterGroup.getChildren().add(removeNumberField);
+		masterGroup.getChildren().add(numberFieldsUIGroup);
+		masterGroup.getChildren().add(sequenceControlsUIGroup);
+		
+		getChildren().add(masterGroup);
+		setPrefSize(masterGroup.getLayoutBounds().getWidth() + offset * 2, masterGroup.getLayoutBounds().getHeight() + offset * 2);
 	}
 
 	public Sequence getSequence() {
@@ -167,6 +183,7 @@ public class SequenceUI extends Group {
 		numberField.refresh();
 		numberFieldsUIGroup.getChildren().add(numberField);
 		numberFieldCount++;
+		setPrefSize(masterGroup.getLayoutBounds().getWidth() + offset * 2, masterGroup.getLayoutBounds().getHeight() + offset * 2);
 	}
 	
 	public void removeNumberField() {
@@ -178,6 +195,7 @@ public class SequenceUI extends Group {
 		numberFieldsUIGroup.getChildren().remove(numberFields.get(numberFieldCount-1));
 		numberFields.remove(numberFieldCount-1);
 		numberFieldCount--;
+		setPrefSize(masterGroup.getLayoutBounds().getWidth() + offset * 2, masterGroup.getLayoutBounds().getHeight() + offset * 2);
 	}
 	
 	class NumberField extends Group {
@@ -292,117 +310,6 @@ public class SequenceUI extends Group {
 					handle.addEventHandler(MouseEvent.ANY, new NumberFieldMouseHandler());
 				}
 			}
-		}
-	}
-	
-	class ParameterElement extends Group {
-		Label label;
-		TextField field;
-		Button increase;
-		Button decrease;
-		
-		private ParameterElement(String text) {
-			double height = 20;
-			label = new Label(text);
-			label.setMinSize(70, height); label.setMaxSize(70, height); label.setPrefSize(70, height);
-			label.setFont(TestUI.labelFont);
-			label.setTextFill(Color.BEIGE);
-			label.setLayoutX(0);
-			
-			field = new TextField();
-			field.setMinSize(40, height); field.setMaxSize(40, height); field.setPrefSize(40, height);
-			field.setFont(TestUI.labelFont);
-			field.setLayoutX(80);
-			field.setFocusTraversable(false);
-			
-			increase = new Button("+");
-			increase.setMinSize(20, height); increase.setMaxSize(20, height); increase.setPrefSize(20, height);
-			increase.setFont(TestUI.labelFont);
-			increase.setLayoutX(120);
-			increase.setFocusTraversable(false);
-			
-			decrease = new Button("-");
-			decrease.setMinSize(20, height); decrease.setMaxSize(20, height); decrease.setPrefSize(20, height);
-			decrease.setFont(TestUI.labelFont);
-			decrease.setLayoutX(140);
-			decrease.setFocusTraversable(false);
-			
-			getChildren().add(label);
-			getChildren().add(field);
-			getChildren().add(increase);
-			getChildren().add(decrease);
-		}
-		
-		public ParameterElement(String text, IntConsumer setParameterIfInt, DoubleConsumer setParameterIfDouble) {
-			this(text);
-			
-			if (setParameterIfInt != null && setParameterIfDouble == null) {
-				field.setOnKeyReleased((e) -> {
-					try {
-						setParameterIfInt.accept(new Integer(field.getText()));
-					} catch (NumberFormatException ex) { }
-				});
-
-				increase.setOnAction((e) -> {
-					try {
-						Integer increasedValue = new Integer(field.getText()) + 1;
-						setParameterIfInt.accept(increasedValue);
-						field.setText(String.valueOf(increasedValue));
-					} catch (NumberFormatException ex) { }
-				});
-
-				decrease.setOnAction((e) -> {
-					try {
-						Integer decreasedValue = new Integer(field.getText()) - 1;
-						setParameterIfInt.accept(decreasedValue);
-						field.setText(String.valueOf(decreasedValue));
-					} catch (NumberFormatException ex) { }
-				});
-			} else if (setParameterIfInt == null && setParameterIfDouble != null) {
-				field.setOnKeyReleased((e) -> {
-					try {
-						setParameterIfDouble.accept(new Double(field.getText()));
-					} catch (NumberFormatException ex) { }
-				});
-
-				increase.setOnAction((e) -> {
-					try {
-						Double increasedValue = new Double(field.getText()) + 1;
-						setParameterIfDouble.accept(increasedValue);
-						field.setText(String.valueOf(increasedValue));
-					} catch (NumberFormatException ex) { }
-				});
-
-				decrease.setOnAction((e) -> {
-					try {
-						Double decreasedValue = new Double(field.getText()) - 1;
-						setParameterIfDouble.accept(decreasedValue);
-						field.setText(String.valueOf(decreasedValue));
-					} catch (NumberFormatException ex) { }
-				});
-			} else {
-				System.out.println("SequenceUI.ParameterElement API Error: Only one function can be specified.");
-				System.exit(1);
-			}
-		}
-		
-		public void setText(String text) {
-			field.setText(text);
-		}
-	}
-	
-	class ModeElement extends Group {
-		public ModeElement(String label, ToggleGroup toggleGroup, SequenceMode sequenceMode) {
-			RadioButton radio = new RadioButton(label);
-			radio.setMinSize(140, 20); radio.setMaxSize(140, 20); radio.setPrefSize(140, 20);
-			radio.setFont(TestUI.labelFont);
-			radio.setTextFill(Color.BEIGE);
-			radio.setFocusTraversable(false);
-			radio.setOnAction((e) -> {
-				sequence.setSequenceMode(sequenceMode);
-			});
-			getChildren().add(radio);
-			toggleGroup.getToggles().add(radio);
 		}
 	}
 }

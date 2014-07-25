@@ -3,6 +3,7 @@ package no.simonsen.gui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import no.simonsen.gui.style.Styler;
 import no.simonsen.midi.ConstantPattern;
 import no.simonsen.midi.EventBuffer;
 import no.simonsen.midi.ValueSupplier;
@@ -16,17 +17,41 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class PatternCombinerUI extends Group {
+public class PatternCombinerUI extends Pane {
+	private Group masterGroup;
+	private double offset = 10;
 	private PatternCombiner patternCombiner;
 	private EventBuffer eventBuffer;
 	private Group patternCellsUIGroup; 
 	private Logger logger;
+
 	
 	public PatternCombinerUI() {
+		Styler.style(this, Styler.Mode.DEFAULT);
+		
+		/*
+		 * Actually, when using Region/Pane directly or subclassing it, the pane is supposed to 
+		 * honor the insets. It doesn't seem to happen automatically. Here, a master group is used
+		 * to hold all nodes in the pane. We then position it and size the pane in order to "fake"
+		 * insets. To comply with the API, we should use the pane's inset values to create this effect
+		 * instead of using offset.
+		 * 
+		 * We might extend Pane so this functionality might be reused - but first we have to verify
+		 * that this code actually works as intended.
+		 * 
+		 * An AnchorPane might give us the functionality we need.
+		 */
+		masterGroup = new Group();
+		masterGroup.setLayoutX(offset);
+		masterGroup.setLayoutY(offset);
+		masterGroup.setBlendMode(BlendMode.MULTIPLY);
+		
 		patternCombiner = new PatternCombiner();
 		
 		this.setOnKeyPressed((e) -> {
@@ -37,17 +62,13 @@ public class PatternCombinerUI extends Group {
 		
 		logger = LoggerFactory.getLogger("no.simonsen.gui.PatternCombinerUI");
 		
-		Rectangle background = new Rectangle(500, 210);
-		background.setFill(Color.SNOW);
-		getChildren().add(background);
-		
 		patternCellsUIGroup = new Group();
-		patternCellsUIGroup.setLayoutX(10);
-		patternCellsUIGroup.setLayoutY(50);
+		patternCellsUIGroup.setLayoutX(0);
+		patternCellsUIGroup.setLayoutY(40);
 		
 		Button addPatternCell = new Button("add pattern cell");
-		addPatternCell.setLayoutX(10);
-		addPatternCell.setLayoutY(10);
+		addPatternCell.setLayoutX(0);
+		addPatternCell.setLayoutY(0);
 		addPatternCell.setFont(TestUI.labelFont);
 		addPatternCell.setOnAction((e) -> {
 			PatternCell patternCell = new PatternCell();
@@ -59,8 +80,8 @@ public class PatternCombinerUI extends Group {
 		patternCellsUIGroup.getChildren().add(new PatternCell("velocity"));
 		
 		CheckBox sendMidiMessages = new CheckBox("Send MIDI messages");
-		sendMidiMessages.setLayoutX(10);
-		sendMidiMessages.setLayoutY(150);
+		sendMidiMessages.setLayoutX(0);
+		sendMidiMessages.setLayoutY(140);
 		sendMidiMessages.setFont(TestUI.labelFont);
 		sendMidiMessages.setOnAction((e) -> {
 			if (sendMidiMessages.isSelected()) {
@@ -79,8 +100,9 @@ public class PatternCombinerUI extends Group {
 		sendMidiMessages.fire();
 		
 		ToggleButton play = new ToggleButton("Play");
-		play.setLayoutX(10);
-		play.setLayoutY(180);
+		play.setLayoutX(0);
+		play.setLayoutY(170);
+		play.setMinHeight(20); // needed to set layout bounds
 		play.setFont(TestUI.labelFont);
 		play.setTooltip(new Tooltip("Press 'space' to play"));
 		play.setOnAction((e) -> {
@@ -93,10 +115,13 @@ public class PatternCombinerUI extends Group {
 			}
 		});
 		
-		getChildren().add(addPatternCell);
-		getChildren().add(patternCellsUIGroup);
-		getChildren().add(sendMidiMessages);
-		getChildren().add(play);
+		masterGroup.getChildren().add(addPatternCell);
+		masterGroup.getChildren().add(patternCellsUIGroup);
+		masterGroup.getChildren().add(sendMidiMessages);
+		masterGroup.getChildren().add(play);
+		
+		getChildren().add(masterGroup);
+		setPrefSize(masterGroup.getLayoutBounds().getWidth() + offset * 2, masterGroup.getLayoutBounds().getHeight() + offset * 2);
 	}
 	
 	private boolean canSendMidiMessages() {

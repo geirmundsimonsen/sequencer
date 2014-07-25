@@ -58,22 +58,8 @@ public class ValueSupplierField extends Group {
 		popupMenu = new PopupMenuUI(12);
 		popupMenu.setLayoutX(numberField.getPrefWidth());
 		popupMenu.setLayoutY(10);
-		popupMenu.addMenuItem("add sequence...", (e) -> {
-			SequenceUI sequenceUI = new SequenceUI();
-			Sequence sequence = new Sequence(valueSupplierId);
-			sequenceUI.setSequence(sequence);
-			numberField.setText(sequenceUI.getSequence().toString());
-			ValueSupplier newSupplier = sequenceUI.getSequence();
-			valueSupplierHost.replaceValueSupplier(valueSupplier, newSupplier);
-			valueSupplier = newSupplier;
-			System.out.println(popupMenu.getLayoutX());
-			new EditWindow(sequenceUI, 
-					getLayoutX() + popupMenu.getLayoutX() + 20, 
-					getLayoutY() + popupMenu.getLayoutY() - 20, 
-					popupMenu.getScene().getWindow());		
-		});
 		
-		popupMenu.addMenuItem("edit...", (e) -> {
+		popupMenu.addMenuItem("edit", (e) -> {
 			if (valueSupplier instanceof Sequence) {
 				Sequence sequence = (Sequence) valueSupplier;
 				SequenceUI listPatternUI = new SequenceUI();
@@ -83,6 +69,28 @@ public class ValueSupplierField extends Group {
 						getLayoutY() + popupMenu.getLayoutY() - 20, 
 						popupMenu.getScene().getWindow());
 			}
+		});
+		
+		popupMenu.addMenuItem("add sequence", (e) -> {
+			SequenceUI sequenceUI = new SequenceUI();
+			Sequence sequence = new Sequence(valueSupplierId);
+			sequenceUI.setSequence(sequence);
+			numberField.setText(sequenceUI.getSequence().toString());
+			ValueSupplier newSupplier = sequenceUI.getSequence();
+			valueSupplierHost.replaceValueSupplier(valueSupplier, newSupplier);
+			valueSupplier = newSupplier;
+			new EditWindow(sequenceUI, 
+					getLayoutX() + popupMenu.getLayoutX() + 20, 
+					getLayoutY() + popupMenu.getLayoutY() - 20, 
+					popupMenu.getScene().getWindow());		
+		});
+		
+		popupMenu.addMenuItem("add series", (e) -> {
+			SeriesPatternUI seriesPatternUI = new SeriesPatternUI();
+			new EditWindow(seriesPatternUI,
+					getLayoutX() + popupMenu.getLayoutX() + 20, 
+					getLayoutY() + popupMenu.getLayoutY() - 20, 
+					popupMenu.getScene().getWindow());
 		});
 		
 		getChildren().add(numberField);
