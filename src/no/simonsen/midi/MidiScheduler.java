@@ -12,22 +12,37 @@ import javax.sound.midi.Receiver;
 /*
  * MidiScheduler holds the midi in receiver, and schedules midi messages to it.
  * It also buffers the messages, since patterns are potentially infinite.
- * The buffering system isn't coded yet, therefore the dumb Thread.sleep() limiting function.
  */
-public class MidiScheduler {
-	Receiver receiver = null;
+public class MidiScheduler extends Thread {
+	PatternCombiner patternCombiner;
 	ScheduledThreadPoolExecutor executor;
 	long unixTimeAtStart;
+	boolean running = true;
 	
-	public MidiScheduler() {
-		try {
-			receiver = MidiSystem.getReceiver();
-		} catch (MidiUnavailableException e) {
-			System.out.println("MIDI Unavailable.");
-		}
+	public MidiScheduler(PatternCombiner patternCombiner) {
+		this.patternCombiner = patternCombiner;
 		executor = new ScheduledThreadPoolExecutor(10);
 		unixTimeAtStart = System.currentTimeMillis();
 	}
+	
+	public void run() {
+		// it seems like timing has to be calcluated beforehand - while non-time related parameters can be calculated
+		// within time buffers to encourage experimentation. Random time events are a special kind of headache.
+	}
+	
+	
+	
+	/*
+	public void run() {
+		while (running) {
+			scheduleAndBlock(patternCombiner.getNextN(1), patternCombiner.getMidiReceiver());
+		}
+	}
+	
+	public void halt() {
+		running = false;
+	}
+	*/
 	
 	/*
 	 * If the first midi event in each batch gets a lock - that is unlocked when that
@@ -36,7 +51,8 @@ public class MidiScheduler {
 	 * This would work assuming that midi events are fired in chronological order.
 	 * Then we'll have a buffer as big as events.size().
 	 */
-	public void scheduleAndBlock(ArrayList<MidiEvent> events) {
+	/*
+	public void scheduleAndBlock(ArrayList<MidiEvent> events, Receiver receiver) {
 		CountDownLatch cdl = new CountDownLatch(1);
 		
 		Runnable runnable = events.get(0).getRunnable(receiver, cdl);
@@ -52,4 +68,5 @@ public class MidiScheduler {
 			e1.printStackTrace();
 		}
 	}
+	*/
 }

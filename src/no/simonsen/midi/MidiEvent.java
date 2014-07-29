@@ -32,6 +32,7 @@ public class MidiEvent {
 				Thread.sleep((long) (length * 1000));
 				sm = new ShortMessage(ShortMessage.NOTE_OFF, pitch, velocity);
 				midiIn.send(sm, -1);
+				System.out.println(midiIn);
 				
 				if (cdl != null) {
 					cdl.countDown();
@@ -43,11 +44,7 @@ public class MidiEvent {
 				System.out.println("Sleep interrupted, why?");
 			}
 		};
-		/*
-		Runnable runnable = () -> {
-			System.out.println("time: " + time + ", length: " + length + ", pitch: " + pitch + ", velocity: " + velocity);
-		};
-		*/
+
 		return runnable;
 	}
 	

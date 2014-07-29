@@ -2,6 +2,7 @@ package no.simonsen.gui;
 
 import no.simonsen.data.Sequence;
 import no.simonsen.midi.ConstantPattern;
+import no.simonsen.midi.SeriesPattern;
 import no.simonsen.midi.ValueSupplier;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -62,9 +63,17 @@ public class ValueSupplierField extends Group {
 		popupMenu.addMenuItem("edit", (e) -> {
 			if (valueSupplier instanceof Sequence) {
 				Sequence sequence = (Sequence) valueSupplier;
-				SequenceUI listPatternUI = new SequenceUI();
-				listPatternUI.setSequence(sequence);
-				new EditWindow(listPatternUI, 
+				SequenceUI sequenceUI = new SequenceUI();
+				sequenceUI.setSequence(sequence);
+				new EditWindow(sequenceUI, 
+						getLayoutX() + popupMenu.getLayoutX() + 20, 
+						getLayoutY() + popupMenu.getLayoutY() - 20, 
+						popupMenu.getScene().getWindow());
+			} else if (valueSupplier instanceof SeriesPattern) {
+				SeriesPattern seriesPattern = (SeriesPattern) valueSupplier;
+				SeriesPatternUI seriesPatternUI = new SeriesPatternUI();
+				seriesPatternUI.setSeriesPattern(seriesPattern);
+				new EditWindow(seriesPatternUI,
 						getLayoutX() + popupMenu.getLayoutX() + 20, 
 						getLayoutY() + popupMenu.getLayoutY() - 20, 
 						popupMenu.getScene().getWindow());
@@ -87,6 +96,12 @@ public class ValueSupplierField extends Group {
 		
 		popupMenu.addMenuItem("add series", (e) -> {
 			SeriesPatternUI seriesPatternUI = new SeriesPatternUI();
+			SeriesPattern seriesPattern = new SeriesPattern(valueSupplierId);
+			seriesPatternUI.setSeriesPattern(seriesPattern);
+			numberField.setText(seriesPatternUI.getSeriesPattern().toString());
+			ValueSupplier newSupplier = seriesPatternUI.getSeriesPattern();
+			valueSupplierHost.replaceValueSupplier(valueSupplier, newSupplier);
+			valueSupplier = newSupplier;
 			new EditWindow(seriesPatternUI,
 					getLayoutX() + popupMenu.getLayoutX() + 20, 
 					getLayoutY() + popupMenu.getLayoutY() - 20, 

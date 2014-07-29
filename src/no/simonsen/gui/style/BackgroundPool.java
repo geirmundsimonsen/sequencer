@@ -13,8 +13,17 @@ import javafx.scene.paint.Color;
 
 public class BackgroundPool {
 	public static Background window;
+	public static Background error;
+	public static Background white;
 	
 	public static void init() {
+		createWindow();
+		createError();
+		createWhite();
+		System.out.println("Backgrounds loaded");
+	}
+	
+	private static void createWindow() {
 		Color bgColor = Color.SNOW;
 		BackgroundFill bgFill = new BackgroundFill(bgColor, CornerRadii.EMPTY, Insets.EMPTY);
 		
@@ -34,11 +43,20 @@ public class BackgroundPool {
 				pixelWriter.setColor(readX, readY, color.deriveColor(1, 1, 1, 0.2));
 			}
 		}
-
 		
 		BackgroundImage bgImage = new BackgroundImage(wImage, null, null, null, null);
 		window = new Background(new BackgroundFill[] { bgFill }, new BackgroundImage[] { bgImage });
-		System.out.println(window.getOutsets());
-		System.out.println("Backgrounds loaded");
+	}
+	
+	private static void createError() {
+		Color bgColor = Color.SALMON;
+		BackgroundFill bgFill = new BackgroundFill(bgColor, CornerRadii.EMPTY, Insets.EMPTY);
+		error = new Background(bgFill);
+	}
+	
+	private static void createWhite() {
+		Color bgColor = Color.WHITE;
+		BackgroundFill bgFill = new BackgroundFill(bgColor, CornerRadii.EMPTY, Insets.EMPTY);
+		white = new Background(bgFill);
 	}
 }

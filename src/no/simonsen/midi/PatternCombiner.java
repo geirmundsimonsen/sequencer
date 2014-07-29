@@ -3,6 +3,8 @@ package no.simonsen.midi;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.midi.Receiver;
+
 import no.simonsen.gui.ValueSupplierHost;
 
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
  * patterns.
  */
 public class PatternCombiner implements ValueSupplierHost {
+	private Receiver midiReceiver = null;
 	private List<ValueSupplier> valueSuppliers = new ArrayList<ValueSupplier>();
 	private Integer timeIndex = null;
 	private Integer lengthIndex = null;
@@ -23,6 +26,7 @@ public class PatternCombiner implements ValueSupplierHost {
 	
 	public PatternCombiner() {
 		logger = LoggerFactory.getLogger("no.simonsen.midi.PatternCombiner");
+		midiReceiver = MidiReceivers.getDefaultReceiver();
 	}
 	
 	public ValueSupplier getValueSupplier(String id) {
@@ -86,5 +90,13 @@ public class PatternCombiner implements ValueSupplierHost {
 	@Override
 	public void replaceValueSupplier(ValueSupplier oldSupplier, ValueSupplier newSupplier) {
 		valueSuppliers.set(valueSuppliers.indexOf(oldSupplier), newSupplier);
+	}
+	
+	public Receiver getMidiReceiver() {
+		return midiReceiver;
+	}
+	
+	public void setMidiReceiver(Receiver midiReceiver) {
+		this.midiReceiver = midiReceiver;
 	}
 }

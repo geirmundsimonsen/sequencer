@@ -132,46 +132,49 @@ public class SequenceUI extends Pane {
 	
 	public void setSequence(Sequence sequence) {
 		this.sequence = sequence;
-		
+
 		for (int i = 0; i < sequence.size(); i++) {
 			addNumberField(false);
 			numberFields.get(i).getValueSupplierField().setValueSupplier(sequence.getValueSupplier(i));
 			numberFields.get(i).getValueSupplierField().setText(sequence.getValueSupplierInfo(i));
-			startOffsetElement.setText(String.valueOf(sequence.getStartOffset()));
-			endOffsetElement.setText(String.valueOf(sequence.getEndOffset()));
-			localOffsetElement.setText(String.valueOf(sequence.getLocalOffset()));
-			patternDurationElement.setText(String.valueOf(sequence.getPatternDuration()));
-			int length = sequence.getLength();
-			if (length != Integer.MAX_VALUE) {
-				lengthElement.setText(String.valueOf(length));
-			} else {
-				lengthElement.setText("inf");
-			}
-			noRepeatMemoryElement.setText(String.valueOf(sequence.getNoRepeatMemory()));
-			SequenceMode sequenceMode = sequence.getSequenceMode();
-			String sequenceModeString = "";
-			if (sequenceMode == SequenceMode.NORMAL)
-				sequenceModeString = "NORMAL";
-			else if (sequenceMode == SequenceMode.TIME_SENSITIVE)
-				sequenceModeString = "TIME SENSITIVE";
-			else if (sequenceMode == SequenceMode.REVERSE)
-				sequenceModeString = "REVERSE";
-			else if (sequenceMode == SequenceMode.RANDOM)
-				sequenceModeString = "RANDOM";
-			else if (sequenceMode == SequenceMode.RANDOM_NO_REPEAT)
-				sequenceModeString = "RANDOM NO REPEAT";
-			else if (sequenceMode == SequenceMode.RANDOM_WALK)
-				sequenceModeString = "RANDOM WALK";
-			for (Toggle toggle : sequenceModeGroup.getToggles()) {
-				RadioButton radio = (RadioButton) toggle;
-				if (radio.getText().equals(sequenceModeString)) {
-					radio.setSelected(true);
-					break;
-				}
+		}
+		
+		startOffsetElement.setText(String.valueOf(sequence.getStartOffset()));
+		endOffsetElement.setText(String.valueOf(sequence.getEndOffset()));
+		localOffsetElement.setText(String.valueOf(sequence.getLocalOffset()));
+		patternDurationElement.setText(String.valueOf(sequence.getPatternDuration()));
+		int length = sequence.getLength();
+		if (length != Integer.MAX_VALUE) {
+			lengthElement.setText(String.valueOf(length));
+		} else {
+			lengthElement.setText("inf");
+		}
+		noRepeatMemoryElement.setText(String.valueOf(sequence.getNoRepeatMemory()));
+		
+		SequenceMode sequenceMode = sequence.getSequenceMode();
+		String sequenceModeString = "";
+		if (sequenceMode == SequenceMode.NORMAL)
+			sequenceModeString = "NORMAL";
+		else if (sequenceMode == SequenceMode.TIME_SENSITIVE)
+			sequenceModeString = "TIME SENSITIVE";
+		else if (sequenceMode == SequenceMode.REVERSE)
+			sequenceModeString = "REVERSE";
+		else if (sequenceMode == SequenceMode.RANDOM)
+			sequenceModeString = "RANDOM";
+		else if (sequenceMode == SequenceMode.RANDOM_NO_REPEAT)
+			sequenceModeString = "RANDOM NO REPEAT";
+		else if (sequenceMode == SequenceMode.RANDOM_WALK)
+			sequenceModeString = "RANDOM WALK";
+		for (Toggle toggle : sequenceModeGroup.getToggles()) {
+			RadioButton radio = (RadioButton) toggle;
+			if (radio.getText().equals(sequenceModeString)) {
+				radio.setSelected(true);
+				break;
 			}
 		}
 	}
-	
+
+
 	public void addNumberField(boolean createValueSupplier) {
 		NumberField numberField = new NumberField();
 		numberFields.add(numberField);

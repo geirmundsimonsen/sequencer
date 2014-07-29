@@ -1,6 +1,7 @@
 package no.simonsen.gui;
 
 import no.simonsen.gui.style.BackgroundPool;
+import no.simonsen.midi.MidiReceivers;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ public class TestUI extends Application {
 	
 	public static void main(String[] args) {
 		BackgroundPool.init();
+		MidiReceivers.init();
 		launch(args);
 	}
 	

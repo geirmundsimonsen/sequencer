@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import no.simonsen.gui.style.Styler;
 import no.simonsen.midi.ConstantPattern;
-import no.simonsen.midi.EventBuffer;
+import no.simonsen.midi.MidiReceivers;
+import no.simonsen.midi.MidiScheduler;
 import no.simonsen.midi.ValueSupplier;
 import no.simonsen.midi.PatternCombiner;
 import javafx.geometry.Pos;
@@ -13,6 +14,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -27,7 +29,7 @@ public class PatternCombinerUI extends Pane {
 	private Group masterGroup;
 	private double offset = 10;
 	private PatternCombiner patternCombiner;
-	private EventBuffer eventBuffer;
+	private MidiScheduler scheduler = null;
 	private Group patternCellsUIGroup; 
 	private Logger logger;
 
@@ -99,6 +101,17 @@ public class PatternCombinerUI extends Pane {
 		});
 		sendMidiMessages.fire();
 		
+		ChoiceBox<String> selectMidiReceiver = new ChoiceBox<>();
+		selectMidiReceiver.setLayoutX(200);
+		selectMidiReceiver.setLayoutY(140);
+		MidiReceivers.getReceiverNames().forEach((name) -> { selectMidiReceiver.getItems().add(name); });
+		selectMidiReceiver.getSelectionModel().selectedIndexProperty().addListener((ov, oldSelected, newSelected) -> {
+			selectMidiReceiver.setValue(selectMidiReceiver.getItems().get(newSelected.intValue()));
+			patternCombiner.setMidiReceiver(MidiReceivers.getReceiver(selectMidiReceiver.getValue()));
+			System.out.println(selectMidiReceiver.getValue());
+		});
+		selectMidiReceiver.setValue(MidiReceivers.getDefaultReceiverName());
+		
 		ToggleButton play = new ToggleButton("Play");
 		play.setLayoutX(0);
 		play.setLayoutY(170);
@@ -107,10 +120,15 @@ public class PatternCombinerUI extends Pane {
 		play.setTooltip(new Tooltip("Press 'space' to play"));
 		play.setOnAction((e) -> {
 			if (play.isSelected()) {
-				eventBuffer = new EventBuffer(patternCombiner);
-				eventBuffer.start();
+				if (scheduler != null) {
+					System.out.println("error: previous scheduler is still around somehow.");
+					return;
+				}
+				scheduler = new MidiScheduler(patternCombiner);
+				scheduler.start();
 			} else {
-				eventBuffer.halt();
+				//scheduler.halt();
+				scheduler = null;
 				patternCombiner.resetValueSuppliers();
 			}
 		});
@@ -118,6 +136,7 @@ public class PatternCombinerUI extends Pane {
 		masterGroup.getChildren().add(addPatternCell);
 		masterGroup.getChildren().add(patternCellsUIGroup);
 		masterGroup.getChildren().add(sendMidiMessages);
+		masterGroup.getChildren().add(selectMidiReceiver);
 		masterGroup.getChildren().add(play);
 		
 		getChildren().add(masterGroup);

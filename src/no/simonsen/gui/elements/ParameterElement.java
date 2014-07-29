@@ -7,13 +7,19 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
 import no.simonsen.gui.TestUI;
 
 public class ParameterElement extends Group {
-	Label label;
-	TextField field;
-	Button increase;
-	Button decrease;
+	private Label label;
+	private TextField field;
+	private Button increase;
+	private Button decrease;
+	private Border errorBorder;
 	
 	private ParameterElement(String text) {
 		double height = 20;
@@ -40,6 +46,8 @@ public class ParameterElement extends Group {
 		decrease.setLayoutX(140);
 		decrease.setFocusTraversable(false);
 		
+		errorBorder = new Border(new BorderStroke(Color.hsb(0, 1, 1, 1), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN));
+		
 		getChildren().add(label);
 		getChildren().add(field);
 		getChildren().add(increase);
@@ -53,7 +61,12 @@ public class ParameterElement extends Group {
 			field.setOnKeyReleased((e) -> {
 				try {
 					setParameterIfInt.accept(new Integer(field.getText()));
-				} catch (NumberFormatException ex) { }
+					if (field.getBorder() != null)
+						field.setBorder(null);
+				} catch (NumberFormatException ex) {
+					if (field.getBorder() == null)
+						field.setBorder(errorBorder);
+				}
 			});
 
 			increase.setOnAction((e) -> {
@@ -75,7 +88,12 @@ public class ParameterElement extends Group {
 			field.setOnKeyReleased((e) -> {
 				try {
 					setParameterIfDouble.accept(new Double(field.getText()));
-				} catch (NumberFormatException ex) { }
+					if (field.getBorder() != null)
+						field.setBorder(null);
+				} catch (NumberFormatException ex) { 
+					if (field.getBorder() == null)
+						field.setBorder(errorBorder);
+				}
 			});
 
 			increase.setOnAction((e) -> {
