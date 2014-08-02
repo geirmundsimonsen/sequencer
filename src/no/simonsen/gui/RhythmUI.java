@@ -55,7 +55,7 @@ public class RhythmUI extends Pane {
 		setPrefSize(masterGroup.getLayoutBounds().getWidth() + offset * 2, masterGroup.getLayoutBounds().getHeight() + offset * 2);
 	}
 	
-	private class MouseHandler implements EventHandler<MouseEvent> {
+	private class MouseHandler implements EventHandler<MouseEvent> { 
 		Rectangle tempPosLength = null;
 
 		@Override
