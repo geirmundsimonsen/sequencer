@@ -14,7 +14,7 @@ public class TestUI extends Application {
 	
 	public static void main(String[] args) {
 		BackgroundPool.init();
-		MidiReceivers.init();
+		//MidiReceivers.init();
 		launch(args);
 	}
 	
@@ -26,8 +26,13 @@ public class TestUI extends Application {
 		}
 				
 		Group root = new Group();
-		PatternCombinerUI pcUI = new PatternCombinerUI();
-		root.getChildren().add(pcUI);
+		
+		//PatternCombinerUI pcUI = new PatternCombinerUI();
+		//root.getChildren().add(pcUI);
+		
+		RhythmUI rUI = new RhythmUI();
+		root.getChildren().add(rUI);
+		
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add("css/test.css");
 		scene.setOnKeyReleased((e) -> {

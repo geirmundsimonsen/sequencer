@@ -4,9 +4,6 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/Users/geirmund/Downloads/logback-1.1.2/logback-classic-1.1.2.jar" sourcepath="/Users/geirmund/Downloads/logback-1.1.2/logback-classic-1.1.2-sources.jar"/>
-	<classpathentry kind="lib" path="/Users/geirmund/Downloads/logback-1.1.2/logback-core-1.1.2.jar" sourcepath="/Users/geirmund/Downloads/logback-1.1.2/logback-core-1.1.2-sources.jar"/>
-	<classpathentry kind="lib" path="/Users/geirmund/Downloads/slf4j-1.7.7/slf4j-api-1.7.7.jar" sourcepath="/Users/geirmund/Downloads/slf4j-1.7.7/slf4j-api-1.7.7-sources.jar"/>
 	<classpathentry kind="lib" path="/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/ext/jfxrt.jar" sourcepath="/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/javafx-src.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

@@ -1,8 +1,5 @@
 package no.simonsen.gui;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import no.simonsen.gui.style.Styler;
 import no.simonsen.midi.ConstantPattern;
 import no.simonsen.midi.MidiReceivers;
@@ -31,7 +28,6 @@ public class PatternCombinerUI extends Pane {
 	private PatternCombiner patternCombiner;
 	private MidiScheduler scheduler = null;
 	private Group patternCellsUIGroup; 
-	private Logger logger;
 
 	
 	public PatternCombinerUI() {
@@ -55,15 +51,7 @@ public class PatternCombinerUI extends Pane {
 		masterGroup.setBlendMode(BlendMode.MULTIPLY);
 		
 		patternCombiner = new PatternCombiner();
-		
-		this.setOnKeyPressed((e) -> {
-			if (e.getCode() == KeyCode.F) {
-				logger.info("{}", patternCombiner.getNext());
-			}
-		});
-		
-		logger = LoggerFactory.getLogger("no.simonsen.gui.PatternCombinerUI");
-		
+				
 		patternCellsUIGroup = new Group();
 		patternCellsUIGroup.setLayoutX(0);
 		patternCellsUIGroup.setLayoutY(40);

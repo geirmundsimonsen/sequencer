@@ -13,9 +13,10 @@ import javafx.scene.text.Text;
  * the (imagined) rectangle, so the numbers are drawn in the negative area.
  */
 public class Grid {
-	double width, height;
-	enum Orientation { VERTICAL, HORIZONTAL }
-	Orientation orientation;
+	private double width, height;
+	private double scale, offset;
+	public enum Orientation { VERTICAL, HORIZONTAL }
+	private Orientation orientation;
 	
 	/**
 	 * If timeline gets resizable, at it most likely will at some point, the easiest thing
@@ -29,15 +30,61 @@ public class Grid {
 		this.orientation = orientation;
 	}
 	
-	public List<Node> calculateGridLines(double scale, double offset) {
+	public void setScale(double scale) {
+		this.scale = scale;
+	}
+	
+	public void setOffset(double offset) {
+		this.offset = offset;
+	}
+	
+	public double unitToPixel(double unitValue) {
+		return (unitValue + offset) * scale;
+	}
+	
+	public double pixelToUnit(double pixel) {
+		return pixel / scale - offset;
+	}
+	
+	public double calculateSnapValue(double pixelPos) {
+		double startUnit = pixelPos / scale - offset;
+		
+		// copy
+		double spacing;
+		//double thickGridSpacing;
+		//String textFormat;
+		
+		if (scale < 20) {
+			spacing = 1;
+			//thickGridSpacing = 5;
+			//textFormat = "%.0f";
+		} else if (scale < 50) {
+			spacing = 0.5;
+			//thickGridSpacing = 1;
+			//textFormat = "%.0f";
+		} else if (scale < 150) {
+			spacing = 0.25;
+			//thickGridSpacing = 1;
+			//textFormat = "%.0f";
+		} else {
+			spacing = 0.1;
+			//thickGridSpacing = 0.5;
+			//textFormat = "%.1f";
+		}
+		// copy end
+		startUnit -= spacing * 0.5;
+		return startUnit - (startUnit % spacing) + spacing;
+	}
+	
+	public List<Node> calculateGridLines() {
 		List<Node> nodeList = new ArrayList<>();
 		
-		double startPixel = 0 / scale - offset;
-		double endPixel = 0;
+		double startUnit = 0 / scale - offset;
+		double endUnit = 0;
 		if (orientation == Orientation.VERTICAL)
-			endPixel = width / scale - offset;
-		if (orientation == Orientation.HORIZONTAL)
-			endPixel = height / scale - offset;
+			endUnit = width / scale - offset;
+		else if (orientation == Orientation.HORIZONTAL)
+			endUnit = height / scale - offset;
 		
 		// move this to a grid template.
 		double spacing;
@@ -64,9 +111,9 @@ public class Grid {
 		}
 		// move end
 		
-		firstGridLine = startPixel - (startPixel % spacing) + spacing; // check
-		double tempGridLine = firstGridLine; // check
-		while (tempGridLine < endPixel) { // check
+		firstGridLine = startUnit - (startUnit % spacing) + spacing;
+		double tempGridLine = firstGridLine;
+		while (tempGridLine < endUnit) {
 			Line line = null;
 			
 			if (orientation == Orientation.VERTICAL) {
@@ -79,13 +126,13 @@ public class Grid {
 						width, height - (tempGridLine + offset) * scale);
 			}
 			
-			line.setMouseTransparent(true); // check
+			line.setMouseTransparent(true);
 			
-			double thickGridModulo = tempGridLine % thickGridSpacing; // check
+			double thickGridModulo = tempGridLine % thickGridSpacing;
 			
-			if (thickGridModulo < 0.0000001 || thickGridModulo > thickGridSpacing - 0.0000001) { // check
-				line.setStrokeWidth(0.5); // check
-				Text text = new Text(String.format(textFormat, tempGridLine)); // check
+			if (thickGridModulo < 0.0000001 || thickGridModulo > thickGridSpacing - 0.0000001) {
+				line.setStrokeWidth(0.5);
+				Text text = new Text(String.format(textFormat, tempGridLine));
 				
 				if (orientation == Orientation.VERTICAL) {
 					text.setX((tempGridLine + offset) * scale - text.getBoundsInLocal().getWidth() / 2);
@@ -95,12 +142,12 @@ public class Grid {
 					text.setY(height - (tempGridLine + offset) * scale + 4);
 				}
 				
-				nodeList.add(text); // check
+				nodeList.add(text);
 			} else {
-				line.setStrokeWidth(0.15); // check
+				line.setStrokeWidth(0.15);
 			}
-			nodeList.add(line); // check
-			tempGridLine += spacing; // check
+			nodeList.add(line);
+			tempGridLine += spacing;
 		}
 		
 		return nodeList;

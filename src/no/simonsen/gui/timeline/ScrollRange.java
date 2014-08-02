@@ -11,14 +11,15 @@ public class ScrollRange extends Region {
 	private Region bar;
 	private double totalWidthReciprocal;
 	private Rectangle scroller;
-	private Rectangle scrollerLeftFlash;
-	private Rectangle scrollerRightFlash;
+	private Rectangle scrollerLeftHandle;
+	private Rectangle scrollerRightHandle;
+	private double handleWidth = 8;
 	private ScrollRangeListener listener;
 	
 	public ScrollRange(double width, String id) {
 		scrollRangeID = id;
 
-		bar = new Region();
+		bar = new Region(); // bar defines the extreme boundaries of the scroller.
 		bar.setMinSize(width, 20);
 		bar.setMaxSize(width, 20);
 		bar.setPrefSize(width, 20);
@@ -29,19 +30,19 @@ public class ScrollRange extends Region {
 		scroller.setFill(Color.LIGHTGRAY);
 		scroller.addEventHandler(MouseEvent.ANY, new ScrollRangeMouseHandler());
 		
-		scrollerLeftFlash = new Rectangle(5, 20);
-		scrollerLeftFlash.setFill(Color.DARKGRAY);
-		scrollerLeftFlash.setMouseTransparent(true);
-		scrollerLeftFlash.setVisible(false);
-		scrollerRightFlash = new Rectangle(5, 20);
-		scrollerRightFlash.setFill(Color.DARKGRAY);
-		scrollerRightFlash.setMouseTransparent(true);
-		scrollerRightFlash.setVisible(false);
+		scrollerLeftHandle = new Rectangle(handleWidth, 20);
+		scrollerLeftHandle.setFill(Color.DARKGRAY);
+		scrollerLeftHandle.setMouseTransparent(true);
+		scrollerLeftHandle.setVisible(false);
+		scrollerRightHandle = new Rectangle(handleWidth, 20);
+		scrollerRightHandle.setFill(Color.DARKGRAY);
+		scrollerRightHandle.setMouseTransparent(true);
+		scrollerRightHandle.setVisible(false);
 		
 		getChildren().add(bar);
 		getChildren().add(scroller);
-		getChildren().add(scrollerLeftFlash);
-		getChildren().add(scrollerRightFlash);
+		getChildren().add(scrollerLeftHandle);
+		getChildren().add(scrollerRightHandle);
 	}
 	
 	/** 
@@ -112,13 +113,64 @@ public class ScrollRange extends Region {
 		listener.scrollChanged(startX * totalWidthReciprocal, (startX + width) * totalWidthReciprocal, width * totalWidthReciprocal, this);
 	}
 	
-	class ScrollRangeMouseHandler implements EventHandler<MouseEvent> {
-		private boolean dragStart = false;
-		private boolean dragMiddle = true;
-		private boolean dragEnd = false;
-		private double initialX = 0;
-		private double initialRectX = 0;
-		
+	private class ScrollRangeMouseHandler implements EventHandler<MouseEvent> {
+
+		private double moveOffset = 0;
+	
+		@Override
+		public void handle(MouseEvent e) {			
+			if (e.getEventType() == MouseEvent.MOUSE_MOVED) {
+				if (e.getX() < scroller.getBoundsInLocal().getMinX() + handleWidth) {
+					scrollerLeftHandle.setX(scroller.getBoundsInLocal().getMinX());
+					scrollerLeftHandle.setVisible(true);
+					scrollerRightHandle.setVisible(false);
+				} else if (e.getX() > scroller.getBoundsInLocal().getMaxX() - handleWidth) {
+					scrollerRightHandle.setX(scroller.getBoundsInLocal().getMaxX() - handleWidth);
+					scrollerRightHandle.setVisible(true);
+					scrollerLeftHandle.setVisible(false);
+				} else {
+					scrollerLeftHandle.setVisible(false);
+					scrollerRightHandle.setVisible(false);
+					moveOffset = e.getX() - scroller.getX();
+				}	
+			} else if (e.getEventType() == MouseEvent.MOUSE_DRAGGED) {				
+				if (scrollerLeftHandle.isVisible()) {
+					double newWidth = scroller.getLayoutBounds().getMaxX() - e.getX();
+					if (newWidth > handleWidth * 2 && e.getX() >= 0) {
+						scroller.setX(e.getX());
+						scroller.setWidth(newWidth);
+						scrollerLeftHandle.setX(scroller.getLayoutBounds().getMinX());
+					}
+					updateListener(scroller.getX(), scroller.getWidth());
+				} else if (scrollerRightHandle.isVisible()) {
+					double newWidth = e.getX() - scroller.getX();
+					if (newWidth > handleWidth * 2 && e.getX() <= bar.getPrefWidth()) {
+						scroller.setWidth(newWidth);
+						scrollerRightHandle.setX(scroller.getLayoutBounds().getMaxX() - handleWidth);
+					} 
+					updateListener(scroller.getX(), scroller.getWidth());
+				} else if (!scrollerLeftHandle.isVisible() && !scrollerRightHandle.isVisible()) {
+					if (e.getX() - moveOffset >= 0 && e.getX() - moveOffset + scroller.getWidth() <= bar.getPrefWidth()) {
+						scroller.setX(e.getX() - moveOffset);
+					}
+					updateListener(scroller.getX(), scroller.getWidth());
+				}
+				
+			} else if (e.getEventType() == MouseEvent.MOUSE_RELEASED) {
+				if (!scrollerLeftHandle.contains(e.getX(), e.getY())) {
+					scrollerLeftHandle.setVisible(false);
+				}
+				if (!scrollerRightHandle.contains(e.getX(), e.getY())) {
+					scrollerRightHandle.setVisible(false);
+				}
+			} else if (e.getEventType() == MouseEvent.MOUSE_EXITED) {
+				if (!e.isPrimaryButtonDown()) {
+					scrollerLeftHandle.setVisible(false);
+					scrollerRightHandle.setVisible(false);
+				}
+			}
+		}
+		/*
 		@Override
 		public void handle(MouseEvent e) {
 			Rectangle source = (Rectangle) e.getSource();
@@ -176,6 +228,7 @@ public class ScrollRange extends Region {
 				scrollerRightFlash.setVisible(false);
 			}
 		}
+		*/
 	}
 	
 	public String getScrollRangeID() { return scrollRangeID; }

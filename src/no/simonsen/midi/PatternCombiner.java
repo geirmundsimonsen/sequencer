@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.sound.midi.Receiver;
-
 import no.simonsen.gui.ValueSupplierHost;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /*
  * PatternCombiner is responsible for generating MIDI events based on the patterns it hold.
@@ -22,10 +19,8 @@ public class PatternCombiner implements ValueSupplierHost {
 	private Integer lengthIndex = null;
 	private Integer pitchIndex = null;
 	private Integer velocityIndex = null;
-	private Logger logger;
 	
 	public PatternCombiner() {
-		logger = LoggerFactory.getLogger("no.simonsen.midi.PatternCombiner");
 		midiReceiver = MidiReceivers.getDefaultReceiver();
 	}
 	
@@ -75,15 +70,14 @@ public class PatternCombiner implements ValueSupplierHost {
 		if (valueSupplier != null) {
 			valueSuppliers.add(valueSupplier);
 			mapIndexToId(valueSupplier.getId(), valueSuppliers.indexOf(valueSupplier));
-			logger.info("{} {}", valueSupplier, valueSupplier.getId());
 		} else {
-			logger.debug("PatternCombiner: Isn't any sense to add an empty valuesupplier, is it?");
+			System.out.println("PatternCombiner: Isn't any sense to add an empty valuesupplier, is it?");
 		}
 	}
 
 	@Override
 	public ValueSupplier removeValueSupplier(int index) {
-		logger.error("PatternCombiner's removeValueSupplier(int) isn't supported");
+		System.out.println("PatternCombiner's removeValueSupplier(int) isn't supported");
 		return null;
 	}
 	
